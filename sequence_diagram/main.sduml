@@ -1,0 +1,32 @@
+actor "Browser" as b
+participant "Server" as s
+database "Database" as d
+
+b -> s: POST /auth/signin
+s -> d: Request user
+s <-- d: Response user
+alt user not found
+b <#red-- s : <color:#red> 400 Bad request </color>
+else user found
+s -> s : Validate user password
+    alt invalid password
+    b <#red-- s: <color:#red> 400 Bad request </color>
+    else valida password
+    s -> s: Generate JWT
+    b <#green-- s: <color:#green> 200 with JWT </color>
+    end
+end
+
+b -> s: GET /me (with jwt)
+s -> s: Validate JWT
+alt invalid jwt
+b <#red-- s: <color:#red> 401 Unauthorize </color>
+else valid jwt
+s -> d: Request user info
+s <-- d: Response user info
+    alt user info not found
+    b <#red-- s: <color:#red> 400 Bad request </color>
+    else
+    b <#green-- s: <color:#green> 200 with user info </color>
+    end
+end
