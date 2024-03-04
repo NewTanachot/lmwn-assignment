@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"lmwn-assignment/api/route"
 	"lmwn-assignment/infrastructure/configuration"
 
@@ -9,6 +10,12 @@ import (
 
 func main() {
 	app := gin.Default()
+
 	route.MapControllerRoute(app)
-	app.Run(configuration.GetEnvPort())
+
+	app.SetTrustedProxies([]string{})
+
+	portString := configuration.GetEnvPort()
+	fmt.Printf("server runing on http://localhost%s\n", portString)
+	app.Run(portString)
 }
